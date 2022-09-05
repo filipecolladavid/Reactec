@@ -1,31 +1,48 @@
-from sqlalchemy.schema import Column
-from sqlalchemy.types import String, Integer, Text, Date, Boolean, ARRAY
+from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import relationship
-from database import Base
+from .database import Base
 
-
-
-class Obras(Base):
-    __tablename__ = "obras"
+class User(Base):
+    __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(20), unique=True)
-    nameDisplayed = Column(Text())
-    date = Column(Date())
-    desc = Column(Text())
-    type = Column(ARRAY(String(20)))
-    district = Column(String(20))
-    images = relationship("Images", backref="obras")
+    username = Column((String(255)), unique=True, index=True)
+    hashed_password = Column(String(255))
 
-class Images(Base):
-    __tablename__ = "images"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(20), unique=True)
-    type = Column(String(20)) #before, while, after
-    path = Column(ARRAY(String((100)))) # 3 fotos cada id, 3 paths
 
-class Users(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(20), unique=True)
-    is_active = Column(Boolean, default=True)
-    hashed_password = Column(String)
+obra_type = Table('obra_type', Base.metadata, Column('obras_id', ForeignKey('obras.id')), Column('types_id', ForeignKey('types.id')))
+
+class Obra(Base):
+    __tablename__ = 'obras'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255))
+    nameDisplayed = Column(String(255))
+    startDate = Column(String(255))
+    endDate = Column(String(255))
+    district = Column(String(255))
+    desc = Column(String(1000))
+    type = relationship('Type', secondary=obra_type, backref='obras')
+    img = relationship('Image')
+
+    def __hash__(self):
+        return hash(self.id)
+
+
+class Type(Base):
+    __tablename__ = 'types'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255))
+
+
+class Image(Base):
+    __tablename__ = 'images'
+    id = Column(Integer, primary_key=True)
+    type = Column(String(255))
+    path = relationship('Path')
+    obra_id = Column(ForeignKey('obras.id'))
+
+
+class Path(Base):
+    __tablename__ = 'path'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255))
+    img_id = Column(ForeignKey('images.id'))
