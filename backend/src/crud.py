@@ -4,6 +4,7 @@ from typing import List
 from sqlalchemy.orm import Session
 from . import models, schemas
 
+
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
@@ -12,7 +13,7 @@ def get_user_by_name(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
 
-def get_users(db: Session, skip: int=0, limit: int=100):
+def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 
@@ -32,41 +33,41 @@ def verifyPwd(db: Session, user: schemas.UserCreate):
 def create_obra(db: Session, obra: schemas.ObraBase):
     obra_name = obra.nameDisplayed.replace(' ', '_')
     typeList = [
-     'antes', 'durante', 'depois']
+        'antes', 'durante', 'depois']
     db_img = []
     for i in typeList:
-        pathList = []
-        for x in range(3):
-            pathList.append(models.Path(name=(obra_name + '_' + i + '_' + str(x))))
+        # for x in range(3):
+        #     # pathList.append(models.Path(
+        #     #     name=(obra_name + '_' + i + '_' + str(x))))
+        db_img.append(models.Image(type=i, path=[]))
+
+    db_obra = models.Obra(name=obra_name,
+                          nameDisplayed=(obra.nameDisplayed),
+                          startDate=(obra.startDate),
+                          endDate=(obra.endDate),
+                          district=(obra.district),
+                          desc=(obra.desc),
+                          img=db_img)  # ,
+    #   img=[])  # db_img)
+    db.add(db_obra)
+    for i in obra.type:
+        db_query_type = db.query(models.Type).filter(
+            models.Type.name == i).first()
+        if db_query_type:
+            db_obra.type.append(db_query_type)
         else:
-            db_img.append(models.Image(type=i, path=pathList))
+            db_obra.type.append(models.Type(name=i))
+    db.commit()
+    db.refresh(db_obra)
 
-    else:
-        db_obra = models.Obra(name=obra_name,
-          nameDisplayed=(obra.nameDisplayed),
-          startDate=(obra.startDate),
-          endDate=(obra.endDate),
-          district=(obra.district),
-          desc=(obra.desc),
-          img=db_img)
-        db.add(db_obra)
-        for i in obra.type:
-            db_query_type = db.query(models.Type).filter(models.Type.name == i).first()
-            if db_query_type:
-                db_obra.type.append(db_query_type)
-            else:
-                db_obra.type.append(models.Type(name=i))
-        else:
-            db.commit()
-            db.refresh(db_obra)
-            return db_obra
+    return db_obra
 
 
-def get_obras(db: Session, skip: int=0, limit: int=100):
+def get_obras(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Obra).offset(skip).limit(limit).all()
 
 
-def get_obras_by_name(db: Session, name: str):
+def get_obra_by_name(db: Session, name: str):
     return db.query(models.Obra).filter(models.Obra.name == name).first()
 
 
@@ -77,7 +78,8 @@ def get_obras_by_district(db: Session, district: str):
 def get_obras_by_type(db: Session, types: List[schemas.TypeBase]):
     obras = []
     for t in types:
-        query = db.query(models.Type).filter(models.Type.name == t.name).first()
+        query = db.query(models.Type).filter(
+            models.Type.name == t.name).first()
         if not query:
             pass
         else:
@@ -88,5 +90,24 @@ def get_obras_by_type(db: Session, types: List[schemas.TypeBase]):
                 return list(OrderedDict.fromkeys(obras))
 
 
-def get_types(db: Session, skip: int=0, limit: int=100):
+def get_types(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Type).offset(skip).limit(limit).all()
+
+#append im
+
+def append_img(db: Session, nameObra: str, type: str, path: List[str]):
+
+    db_obra = get_obra_by_name(db=db, name=nameObra)
+    db_img = []
+    pathList = []
+    for x in range(3):
+        print(path[x])
+        pathList.append(models.Path(
+            name=(path[x])
+        ))
+    db_img.append(models.Image(type=path, path=pathList))
+
+    db_obra.img.extend(db_img)
+
+    db.commit()
+    db.refresh(db_obra)

@@ -1,4 +1,5 @@
 from typing import List
+from unicodedata import name
 from fastapi import Depends, FastAPI, HTTPException, File, UploadFile
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
@@ -57,7 +58,7 @@ def login_user(user: schemas.UserCreate, db: Session=Depends(get_db)):
 
 @app.post('/obras/create-obra', response_model=(schemas.Obra))
 def create_obra(obra: schemas.ObraBase, db: Session=Depends(get_db)):
-    db_obra = crud.get_obras_by_name(db, name=(obra.nameDisplayed.replace(' ', '_')))
+    db_obra = crud.get_obra_by_name(db, name=(obra.nameDisplayed.replace(' ', '_')))
     print(db_obra)
     if db_obra:
         raise HTTPException(status_code=400, detail='Obra already registered')
@@ -71,17 +72,20 @@ def get_all(skip: int=0, limit: int=100, db: Session=Depends(get_db)):
 
 @app.post('/obras/get-by-type', response_model=(List[schemas.Obra]))
 def get_by_type(types: List[schemas.TypeBase], db: Session=Depends(get_db)):
-    db_obra = crud.get_obras_by_type(db=db, types=types)
+    db_obra = crud.get_obra_by_type(db=db, types=types)
     return db_obra
 
 
 @app.get('/obras/get-all-types', response_model=(List[schemas.Type]))
 def get_all_types(skip: int=0, limit: int=100, db: Session=Depends(get_db)):
-    return crud.get_types(db, skip=skip, limit=limit)
+    return crud.get_types(db=db, skip=skip, limit=limit)
 
 
 @app.post('/files/antes/{nameObra}')
-async def create_files_antes(nameObra: str, images: List[UploadFile]=File(...)):
+async def create_files_antes(nameObra: str, images: List[UploadFile]=File(...), db: Session=Depends(get_db)):
+
+    crud.append_img(db=db, nameObra=nameObra, type="antes",path=["teste_1", "teste_2", "teste_3"])
+
     for image in images:
         ext = image.filename.split('.')[1]
         file_name = nameObra + '_antes_' + str(images.index(image))

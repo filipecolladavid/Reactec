@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import relationship
 from .database import Base
 
+
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
@@ -9,7 +10,9 @@ class User(Base):
     hashed_password = Column(String(255))
 
 
-obra_type = Table('obra_type', Base.metadata, Column('obras_id', ForeignKey('obras.id')), Column('types_id', ForeignKey('types.id')))
+obra_type = Table('obra_type', Base.metadata, Column(
+    'obras_id', ForeignKey('obras.id')), Column('types_id', ForeignKey('types.id')))
+
 
 class Obra(Base):
     __tablename__ = 'obras'
@@ -21,7 +24,7 @@ class Obra(Base):
     district = Column(String(255))
     desc = Column(String(1000))
     type = relationship('Type', secondary=obra_type, backref='obras')
-    img = relationship('Image')
+    img = relationship('Image', backref='obras')
 
     def __hash__(self):
         return hash(self.id)
