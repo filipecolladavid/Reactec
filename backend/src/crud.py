@@ -36,9 +36,6 @@ def create_obra(db: Session, obra: schemas.ObraBase):
         'antes', 'durante', 'depois']
     db_img = []
     for i in typeList:
-        # for x in range(3):
-        #     # pathList.append(models.Path(
-        #     #     name=(obra_name + '_' + i + '_' + str(x))))
         db_img.append(models.Image(type=i, path=[]))
 
     db_obra = models.Obra(name=obra_name,
@@ -103,28 +100,11 @@ def append_img(db: Session, nameObra: str, type: str, path: List[str]):
 
     query_img = db.query(models.Image).filter(models.Image.obra_id == id, models.Image.type == type).first()
 
-    pathList = []
-
     for p in path:
-        pathList.append(models.Path(name=p))
+        query_img.path.append(models.Path(name=p))
 
-    query_img.append()
-
+    db.add(query_img)
     db.commit()
     db.refresh(db_obra)
 
-    # if(db_obra.img.type == type):
-    #     db_obra.img.type
-    # db_img = []
-    # pathList = []
-    # for x in range(3):
-    #     print(path[x])
-    #     pathList.append(models.Path(
-    #         name=(path[x])
-    #     ))
-    # db_img.append(models.Image(type=path, path=pathList))
-
-    # db_obra.img.extend(db_img)
-
-    # db.commit()
-    # db.refresh(db_obra)
+    return db_obra

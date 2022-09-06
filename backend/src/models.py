@@ -40,7 +40,7 @@ class Image(Base):
     __tablename__ = 'images'
     id = Column(Integer, primary_key=True)
     type = Column(String(255))
-    path = relationship('Path')
+    path = relationship('Path', backref='images')
     obra_id = Column(ForeignKey('obras.id'))
 
 

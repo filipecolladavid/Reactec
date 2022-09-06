@@ -86,18 +86,22 @@ async def create_files_antes(nameObra: str, images: List[UploadFile]=File(...), 
 
     crud.append_img(db=db, nameObra=nameObra, type="antes",path=["teste_1", "teste_2", "teste_3"])
 
-    for image in images:
-        ext = image.filename.split('.')[1]
-        file_name = nameObra + '_antes_' + str(images.index(image))
-        file_location = 'img/' + file_name + '.' + ext
-        with open(file_location, 'wb+') as (file_object):
-            file_object.write(image.file.read())
-    else:
-        return {'info': f"file '{file_name}' saved at '{file_location}'"}
+    # for image in images:
+    #     ext = image.filename.split('.')[1]
+    #     file_name = nameObra + '_antes_' + str(images.index(image))
+    #     file_location = 'img/' + file_name + '.' + ext
+    #     with open(file_location, 'wb+') as (file_object):
+    #         file_object.write(image.file.read())
+    # else:
+    #     return {'info': f"file '{file_name}' saved at '{file_location}'"}
+    return "ok"
 
 
 @app.post('/files/durante/{nameObra}')
-async def create_files_durante(nameObra: str, images: List[UploadFile]=File(...)):
+async def create_files_durante(nameObra: str, images: List[UploadFile]=File(...), db: Session=Depends(get_db)):
+
+    crud.append_img(db=db, nameObra=nameObra, type="durante",path=["teste_1", "teste_2", "teste_3"])
+
     for image in images:
         ext = image.filename.split('.')[1]
         file_name = nameObra + '_durante_' + str(images.index(image))
@@ -109,7 +113,10 @@ async def create_files_durante(nameObra: str, images: List[UploadFile]=File(...)
 
 
 @app.post('/files/depois/{nameObra}')
-async def create_files_depois(nameObra: str, images: List[UploadFile]=File(...)):
+async def create_files_depois(nameObra: str, images: List[UploadFile]=File(...), db: Session=Depends(get_db)):
+
+    crud.append_img(db=db, nameObra=nameObra, type="durante",path=["teste_1", "teste_2", "teste_3"])
+
     for image in images:
         ext = image.filename.split('.')[1]
         file_name = nameObra + '_depois_' + str(images.index(image))
