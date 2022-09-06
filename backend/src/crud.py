@@ -47,8 +47,7 @@ def create_obra(db: Session, obra: schemas.ObraBase):
                           endDate=(obra.endDate),
                           district=(obra.district),
                           desc=(obra.desc),
-                          img=db_img)  # ,
-    #   img=[])  # db_img)
+                          img=db_img)
     db.add(db_obra)
     for i in obra.type:
         db_query_type = db.query(models.Type).filter(
@@ -93,21 +92,39 @@ def get_obras_by_type(db: Session, types: List[schemas.TypeBase]):
 def get_types(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Type).offset(skip).limit(limit).all()
 
-#append im
+#Append img to type in obra
 
 def append_img(db: Session, nameObra: str, type: str, path: List[str]):
 
     db_obra = get_obra_by_name(db=db, name=nameObra)
-    db_img = []
-    pathList = []
-    for x in range(3):
-        print(path[x])
-        pathList.append(models.Path(
-            name=(path[x])
-        ))
-    db_img.append(models.Image(type=path, path=pathList))
 
-    db_obra.img.extend(db_img)
+    id = db_obra.id
+    print(id)
+
+    query_img = db.query(models.Image).filter(models.Image.obra_id == id, models.Image.type == type).first()
+
+    pathList = []
+
+    for p in path:
+        pathList.append(models.Path(name=p))
+
+    query_img.append()
 
     db.commit()
     db.refresh(db_obra)
+
+    # if(db_obra.img.type == type):
+    #     db_obra.img.type
+    # db_img = []
+    # pathList = []
+    # for x in range(3):
+    #     print(path[x])
+    #     pathList.append(models.Path(
+    #         name=(path[x])
+    #     ))
+    # db_img.append(models.Image(type=path, path=pathList))
+
+    # db_obra.img.extend(db_img)
+
+    # db.commit()
+    # db.refresh(db_obra)
