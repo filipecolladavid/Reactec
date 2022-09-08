@@ -1,12 +1,12 @@
 from typing import List
 from fastapi import Depends, FastAPI, HTTPException, File, UploadFile
 from fastapi.responses import FileResponse
+import uvicorn
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
-from . import crud, models, schemas
-from .database import SessionLocal, engine
-from minio import Minio
-from minio.error import S3Error
+from utils import crud, models, schemas
+from utils import environment_reader
+from utils.database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -18,11 +18,12 @@ app.add_middleware(CORSMiddleware,
                    allow_methods=['*'],
                    allow_headers=['*'])
 
-client = Minio(
-    "play.min.io",
-    access_key="Q3AM3UQ867SPQQA43P2F",
-    secret_key="zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG",
-)
+environs = environment_reader.read_environments()
+
+print(environs)
+
+if __name__ == '__main__':
+    uvicorn.run(app, host=environs.host, port=environs.port)
 
 
 def get_db():

@@ -1,0 +1,51 @@
+version: "3.8"
+services: 
+
+  minio:
+    image: minio/minio
+    container_name: minioReatec
+    ports:
+      - 9000:9000
+      - 9090:9090
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: ABCdef00
+    volumes:
+      - minio_data:/data
+    command: ["minio","server","/data","--console-address",":9090"]
+
+  fastapi:
+    build: ./backend
+    container_name: backend_fastapi
+    ports:
+      - 8000:8000
+    environment:
+      ENV: dev
+      HOST: 0.0.0.0
+      PORT: 8000
+      S_ACCESS_KEY: adminReatec
+      S_SECRET_KEY: ABCdef00
+      S_ENDPOINT: http://localhost:9000
+      S_BUCKET: reatec-photo-storage
+    command: ["python3", "src/main.py"]
+    #command: ["uvicorn", "src.main:app","--host", "0.0.0.0", "--port", "80"]
+
+
+  # react:
+  #   build: .
+  #   container_name: frontend_react
+  #   ports:
+  #     - 3000:3000
+  #   command: ["npm start"]
+
+volumes:
+  minio_data:
+
+  # docker run    
+  # -p 9000:9000    
+  # -p 9090:9090    
+  # --name minio    
+  # -v minioData:/data    
+  # -e "MINIO_ROOT_USER=admin"    
+  # -e "MINIO_ROOT_PASSWORD=ABCDef00"    
+  # quay.io/minio/minio server /data --console-address ":9090"
