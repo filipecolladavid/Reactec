@@ -23,11 +23,12 @@ services:
       ENV: dev
       HOST: 0.0.0.0
       PORT: 8000
-      S_ACCESS_KEY: adminReatec
-      S_SECRET_KEY: ABCdef00
-      S_ENDPOINT: http://localhost:9000
-      S_BUCKET: reatec-photo-storage
-    command: ["python3", "src/main.py"]
+      S3_ACCESS_KEY: adminReatec
+      S3_SECRET_KEY: ABCdef00
+      S3_ENDPOINT: http://localhost:9000
+      S3_BUCKET: reatec-photo-storage
+
+    command: ["python3", "main.py"]
     #command: ["uvicorn", "src.main:app","--host", "0.0.0.0", "--port", "80"]
 
 
