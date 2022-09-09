@@ -1,3 +1,4 @@
+import os
 from typing import List
 from fastapi import Depends, FastAPI, HTTPException, File, UploadFile
 from fastapi.responses import FileResponse
@@ -23,9 +24,10 @@ app.add_middleware(CORSMiddleware,
 environs = environment_reader.read_environments()
 
 minio_client = Minio(
-    endpoint=environs.s3_endpoint,
+    "172.17.0.1:9000",
     access_key=environs.s3_access,
-    secret_key=environs.s3_secret
+    secret_key=environs.s3_secret,
+    secure=False
 )
 
 
@@ -102,12 +104,19 @@ async def create_files_antes(nameObra: str, images: List[UploadFile] = File(...)
     for image in images:
         file_name = nameObra + '_antes_' + str(images.index(image))
         try:
-            result = minio_client.put_object(
-                environs.s3_bucket, file_name, image
-            )
-            path.append(environs.s3_endpoint+"/"+result.object_name)
-        except S3Error as exc:
-            print("error occurred.", exc)
+            result = minio_client.fput_object(environs.s3_bucket, file_name, image.file.fileno())
+            path.append("http://localhost:9000/"+result.object_name)
+        except S3Error as err:
+            print(err)
+
+        # file_name = nameObra + '_antes_' + str(images.index(image))
+        # try:
+        #     result = minio_client.fput_object(
+        #         environs.s3_bucket, file_name, image,
+        #     )
+        #     path.append("http://localhost:9000/"+result.object_name)
+        # except S3Error as exc:
+        #     print("error occurred.", exc)
     
     crud.append_img(db=db, nameObra=nameObra, type="antes",path=path)
 
