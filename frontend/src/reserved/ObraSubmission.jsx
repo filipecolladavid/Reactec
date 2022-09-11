@@ -7,14 +7,12 @@ const ObraSubmission = () => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch("http://localhost:8000/obras/get-all-types");
+      const response = await fetch("http://0.0.0.0:8000/obras/get-all-types");
       const data = await response.json();
       const tArray = [];
       for (let t in data) {
         tArray.push(data[t].name);
       }
-
-      console.log(tArray);
       setTypes(tArray);
       setLoading(false);
     }

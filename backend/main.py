@@ -84,16 +84,25 @@ def create_obra(obra: schemas.ObraBase, db: Session = Depends(get_db)):
 def get_all(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_obras(db, skip=skip, limit=limit)
 
-
 @app.post('/obras/get-by-type', response_model=(List[schemas.Obra]))
 def get_by_type(types: List[schemas.TypeBase], db: Session = Depends(get_db)):
-    db_obra = crud.get_obra_by_type(db=db, types=types)
-    return db_obra
+    if not types:
+        return crud.get_obras(db, skip=0, limit=100)
+    else:
+        return crud.get_obras_by_type(db=db, types=types)
 
 
 @app.get('/obras/get-all-types', response_model=(List[schemas.Type]))
 def get_all_types(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_types(db=db, skip=skip, limit=limit)
+
+
+@app.get('/obras/get-by-name/{nameObra}', response_model=schemas.Obra)
+async def get_by_name(nameObra: str, db: Session = Depends(get_db)):
+    db_obra = crud.get_obra_by_name(db=db, name=nameObra)
+    if not db_obra:
+        raise HTTPException(status_code=404, detail="Obra not found")
+    return db_obra
 
 
 @app.post('/files/antes/{nameObra}')
@@ -102,71 +111,61 @@ async def create_files_antes(nameObra: str, images: List[UploadFile] = File(...)
     path = []
 
     for image in images:
-        file_name = nameObra + '_antes_' + str(images.index(image))
+        file_name = nameObra.lower() + '_antes_' + str(images.index(image)) + \
+            "." + image.content_type.split("/")[1]
         try:
-            result = minio_client.fput_object(environs.s3_bucket, file_name, image.file.fileno())
-            path.append("http://localhost:9000/"+result.object_name)
+            minio_client.fput_object(
+                environs.s3_bucket, file_name, image.file.fileno())
+            path.append("http://172.17.0.1:9000/" +
+                        environs.s3_bucket+"/"+file_name)
         except S3Error as err:
             print(err)
 
-        # file_name = nameObra + '_antes_' + str(images.index(image))
-        # try:
-        #     result = minio_client.fput_object(
-        #         environs.s3_bucket, file_name, image,
-        #     )
-        #     path.append("http://localhost:9000/"+result.object_name)
-        # except S3Error as exc:
-        #     print("error occurred.", exc)
-    
-    crud.append_img(db=db, nameObra=nameObra, type="antes",path=path)
+    crud.append_img(db=db, nameObra=nameObra, type="antes", path=path)
 
-    # for image in images:
-    #     ext = image.filename.split('.')[1]
-    #     file_name = nameObra + '_antes_' + str(images.index(image))
-    #     file_location = 'img/' + file_name + '.' + ext
-    #     with open(file_location, 'wb+') as (file_object):
-    #         file_object.write(image.file.read())
-    # else:
-    #     return {'info': f"file '{file_name}' saved at '{file_location}'"}
     return "ok"
 
 
 @app.post('/files/durante/{nameObra}')
 async def create_files_durante(nameObra: str, images: List[UploadFile] = File(...), db: Session = Depends(get_db)):
 
-    crud.append_img(db=db, nameObra=nameObra, type="durante",
-                    path=["teste_1", "teste_2", "teste_3"])
+    path = []
 
     for image in images:
-        ext = image.filename.split('.')[1]
-        file_name = nameObra + '_durante_' + str(images.index(image))
-        file_location = 'img/' + file_name + '.' + ext
-        with open(file_location, 'wb+') as (file_object):
-            file_object.write(image.file.read())
-    else:
-        return {'info': f"file '{file_name}' saved at '{file_location}'"}
+        file_name = nameObra.lower() + '_durante_' + str(images.index(image)) + \
+            "." + image.content_type.split("/")[1]
+        try:
+            minio_client.fput_object(
+                environs.s3_bucket, file_name, image.file.fileno())
+            path.append("http://172.17.0.1:9000/" +
+                        environs.s3_bucket+"/"+file_name)
+        except S3Error as err:
+            print(err)
+
+    crud.append_img(db=db, nameObra=nameObra, type="durante", path=path)
+
+    return "ok"
 
 
 @app.post('/files/depois/{nameObra}')
 async def create_files_depois(nameObra: str, images: List[UploadFile] = File(...), db: Session = Depends(get_db)):
 
-    crud.append_img(db=db, nameObra=nameObra, type="durante",
-                    path=["teste_1", "teste_2", "teste_3"])
+    path = []
 
     for image in images:
-        ext = image.filename.split('.')[1]
-        file_name = nameObra + '_depois_' + str(images.index(image))
-        file_location = 'img/' + file_name + '.' + ext
-        with open(file_location, 'wb+') as (file_object):
-            file_object.write(image.file.read())
-    else:
-        return {'info': f"file '{file_name}' saved at '{file_location}'"}
+        file_name = nameObra.lower() + '_depois_' + str(images.index(image)) + \
+            "." + image.content_type.split("/")[1]
+        try:
+            minio_client.fput_object(
+                environs.s3_bucket, file_name, image.file.fileno())
+            path.append("http://172.17.0.1:9000/" +
+                        environs.s3_bucket+"/"+file_name)
+        except S3Error as err:
+            print(err)
 
+    crud.append_img(db=db, nameObra=nameObra, type="depois", path=path)
 
-@app.get('/files/get-images/{img_name}')
-async def get_files_obra(img_name: str):
-    home_path = '/home/fcd/Desktop/Reactec/backend/img/'
-    return FileResponse(home_path + img_name)
+    return "ok"
 
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=8000)

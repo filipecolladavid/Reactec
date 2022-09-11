@@ -19,7 +19,7 @@ const InfoObra = ({ types, setTypes }) => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const response = await fetch("http://localhost:8000/obras/create-obra", {
+    const response = await fetch("http://0.0.0.0:8000/obras/create-obra", {
       method: "POST",
       headers: {
         Accept: "application/json",

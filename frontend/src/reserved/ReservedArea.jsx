@@ -10,7 +10,7 @@ const ReservedArea = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const url = "http://localhost:8000/users/login";
+  const url = "http://0.0.0.0:8000/users/login";
 
   async function handleSubmit() {
     setLoading(true);

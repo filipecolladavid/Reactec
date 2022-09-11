@@ -3,12 +3,13 @@ import { useState, useRef } from "react";
 const FormObraImg = ({ obraName }) => {
   const type = ["Antes", "Durante", "Depois"];
 
-  const url = "http://127.0.0.1:8000/files/";
+  const url = "http://0.0.0.0:8000/files/";
 
   const fileInputRef = useRef();
   const [uploadFiles, setUploadFiles] = useState([]);
   const [uploadType, setUploadType] = useState(type[0]);
   const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,18 +18,17 @@ const FormObraImg = ({ obraName }) => {
     let data = new FormData();
 
     for (let i = 0; i < uploadFiles.length; i++) {
-      data.append("images", uploadFiles[i],uploadFiles[i].name );
+      data.append("images", uploadFiles[i], uploadFiles[i].name);
       console.log(data);
     }
 
     console.log(data);
 
     const response = await fetch(
-      url + uploadType.toLowerCase() + "/"+obraName+"/",
+      url + uploadType.toLowerCase() + "/" + obraName + "/",
       {
         method: "POST",
         headers: {
-          
           Accept: "application/json",
           "X-Requested-With": "XMLHttpRequest",
           mode: "Access-Control-Allow-Origin",
@@ -39,6 +39,9 @@ const FormObraImg = ({ obraName }) => {
       .then(function (response) {
         // first then()
         if (response.ok) {
+          if (type[type.indexOf(uploadType)] + 1 == 3) {
+            setDone(true);
+          }
           setUploadFiles([]);
           setUploadType(type[type.indexOf(uploadType) + 1]);
           fileInputRef.current.value = null;
@@ -60,16 +63,22 @@ const FormObraImg = ({ obraName }) => {
   };
 
   return (
-    <form className="form" id={uploadType} onSubmit={handleSubmit}>
-      <h3>{uploadType}</h3>
-      <input
-        type="file"
-        multiple
-        ref={fileInputRef}
-        onChange={(e) => setUploadFiles(e.target.files)}
-      ></input>
-      <input type="submit"></input>
-    </form>
+    <>
+      {done ? (
+        <>Carregamento concluido</>
+      ) : (
+        <form className="form" id={uploadType} onSubmit={handleSubmit}>
+          <h3>{uploadType}</h3>
+          <input
+            type="file"
+            multiple
+            ref={fileInputRef}
+            onChange={(e) => setUploadFiles(e.target.files)}
+          ></input>
+          <input type="submit"></input>
+        </form>
+      )}
+    </>
   );
 };
 

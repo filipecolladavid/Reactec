@@ -1,0 +1,17 @@
+.query-result-container {
+    display: flex;
+}
+
+.cardObra {
+    width: 18rem;
+    margin:15px
+}
+
+.cardObra:hover {
+    cursor: pointer;
+}
+
+.cardObra img {
+    height: 250px;
+    width: 250px;
+}
