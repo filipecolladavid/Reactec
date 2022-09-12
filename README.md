@@ -1,4 +1,14 @@
-# Reactec
+# Reactec - WORK IN PROGRESS
+
+## Description
+This is a WebApp that allows an authenticated to user to upload "obras" to a database. 
+These "obras" are then shown to the public trough a query, that can be filtered by type.
+<br>
+<br>
+Built with:
+- [FastAPI](https://fastapi.tiangolo.com/): for the backend
+- [MINIO](https://min.io/): for the storage of images 
+- [ReactJS](https://reactjs.org/): for the frontend
 
 ## Start the webapp
 1. docker compose up --build
