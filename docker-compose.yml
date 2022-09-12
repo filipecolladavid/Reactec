@@ -8,11 +8,24 @@ services:
       - 9000:9000
       - 9090:9090
     environment:
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: ABCdef00
+      MINIO_ACCESS_KEY: admin
+      MINIO_SECRET_KEY: ABCdef00
     volumes:
       - minio_data:/data
     command: ["minio","server","/data","--console-address",":9090"]
+
+  # createbuckets:
+  #   image: minio/mc
+  #   depends_on:
+  #     - minio
+  #   entrypoint: >
+  #     /bin/sh -c "
+  #     /usr/bin/mc alias set minio http://127.0.0.1:9090 admin ABCdef00;
+  #     /usr/bin/mc mb minio/reatec-photo-storage;
+  #     /usr/bin/mc policy set public minio/reatec-photo-storage;
+  #     exit 0;
+  #     "
+    
 
   fastapi:
     build: ./backend
