@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-
+import { Spinner } from "react-bootstrap";
 const FormObraImg = ({ obraName }) => {
   const type = ["Antes", "Durante", "Depois"];
 
@@ -37,7 +37,6 @@ const FormObraImg = ({ obraName }) => {
       }
     )
       .then(function (response) {
-        // first then()
         if (response.ok) {
           if (type[type.indexOf(uploadType)] + 1 == 3) {
             setDone(true);
@@ -45,27 +44,27 @@ const FormObraImg = ({ obraName }) => {
           setUploadFiles([]);
           setUploadType(type[type.indexOf(uploadType) + 1]);
           fileInputRef.current.value = null;
-          setLoading(false);
           return response.json();
         }
         throw new Error("Something went wrong.", response);
       })
       .then(function (text) {
-        // second then()
         console.log("Request successful", text);
         return text;
       })
       .catch(function (error) {
-        // catch
         console.log("Request failed", error);
       });
-    // console.log(response);
   };
 
   return (
     <>
       {done ? (
         <>Carregamento concluido</>
+      ) : loading ? (
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
       ) : (
         <form className="form" id={uploadType} onSubmit={handleSubmit}>
           <h3>{uploadType}</h3>

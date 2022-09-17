@@ -10,7 +10,7 @@ const ObraCard = ({name, nameDisplayed, desc, types, dates, imgPath, handleClick
   
   return (
     <Card className="cardObra" key = {name} onClick={() => handleClick(name)}>
-      <Card.Img variant="top" src={imgPath} />
+      <Card.Img variant="top" className="image" src={imgPath}/>
       <Card.Body>
         <Card.Title>{nameDisplayed}</Card.Title>
         <Card.Text>{shortText(desc)}</Card.Text>

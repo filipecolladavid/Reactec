@@ -1,15 +1,7 @@
 import { Col, Row, Button, Form } from "react-bootstrap";
 import { useState } from "react";
 
-const FormObraText = ({
-  handleSubmit,
-  formData,
-  setFormData,
-  types,
-  setTypes,
-  typesSelec,
-  errorMessage
-}) => {
+const FormObraText = ({ types, setTypes, setSubmited, setObraName }) => {
   const distr = [
     "Aveiro",
     "Beja",
@@ -31,94 +23,197 @@ const FormObraText = ({
   ];
 
   const [newType, setNewType] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [formData, setFormData] = useState({
+    nameDisplayed: "",
+    startDate: "",
+    endDate: "",
+    district: "",
+    desc: "",
+    type: [],
+  });
 
-  function addNewType(newType) {
-    const newArray = types;
-    if (newArray.indexOf(newType) === -1 && newType !== "")
-      newArray.push(newType);
-    setTypes(newArray);
+  function handleUpdateType(str) {
+    const newTypes = types.map((obj) => {
+      if (obj.name === str) {
+        return { ...obj, selected: !obj.selected };
+      }
+      return obj;
+    });
+
+    setTypes(newTypes);
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    let typesToSend = [];
+    for (let obj in types) {
+      if (types[obj].selected) {
+        typesToSend.push(types[obj].name);
+      }
+    }
+
+    setFormData({ ...formData, type: typesToSend });
+
+    const response = await fetch("http://0.0.0.0:8000/obras/create-obra", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+        mode: "Access-Control-Allow-Origin",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then(function (response) {
+        // first then()
+        if (response.ok) {
+          setSubmited(true);
+          return response.json();
+        } else if (response.status === 400) {
+          setErrorMessage("Obra já existe, escolha outro nome");
+        }
+        throw new Error("Something went wrong.", response);
+      })
+      .then(function (text) {
+        // second then()
+        console.log("Request successful", text);
+        return text;
+      })
+      .catch(function (error) {
+        // catch
+        console.log("Request failed", error);
+      });
+
+    setObraName(response.name);
+
+    console.log(response);
   }
 
   return (
-    <Form className="form" onSubmit={handleSubmit}>
-      <Form.Group className="mb-3" controlId="formGridName">
-        <Form.Label>Nome da Obra</Form.Label>
-        <Form.Control
-          placeholder="Nome a ser exibido"
-          onChange={(e) =>
-            setFormData({ ...formData, nameDisplayed: e.target.value })
-          }
-        />
-        {errorMessage}
-      </Form.Group>
+    <Form
+      style={{ width: "40rem", paddingTop: "2rem" }}
+      onSubmit={handleSubmit}
+    >
+      <Row>
+        <Form.Group>
+          <Form.Label>Nome da Obra</Form.Label>
+          <Form.Control
+            required
+            placeholder="Nome a ser exibido"
+            onChange={(e) =>
+              setFormData({ ...formData, nameDisplayed: e.target.value })
+            }
+          />
+          {errorMessage}
+        </Form.Group>
+      </Row>
+      <Row>
+        <Col>
+          <Form.Group controlId="formGridState">
+            <Form.Label>Distrito</Form.Label>
+            <Form.Select
+              required
+              defaultValue="Distrito"
+              onChange={(e) =>
+                setFormData({ ...formData, district: e.target.value })
+              }
+            >
+              <option>Selectione a zona</option>
+              {distr.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+        </Col>
+        <Col>
+          <Form.Group>
+            <Form.Label>Datas</Form.Label>
+            <div className="start-date">
+              <label htmlFor="start">Start date:</label>
+              <input
+                type="date"
+                id="start"
+                name="trip-start"
+                min="2010-01-01"
+                required
+                onChange={(e) =>
+                  setFormData({ ...formData, startDate: e.target.value })
+                }
+              ></input>
+            </div>
+            <div className="end-date">
+              <label htmlFor="end">End date:</label>
 
-      <Row className="mb-3">
-        <Form.Group as={Col} controlId="formGridState">
-          <Form.Label>Distrito</Form.Label>
-          <Form.Select
-            defaultValue="Distrito"
-            onChange={(e) =>
-              setFormData({ ...formData, district: e.target.value })
-            }
-          >
-            <option>Selectione a zona</option>
-            {distr.map((d) => (
-              <option key={d} value={d}>{d}</option>
-            ))}
-            <option value="Aveiro">Aveiro</option>
-          </Form.Select>
+              <input
+                type="date"
+                id="end"
+                name="trip-end"
+                placeholder="dd-mm-yyyy"
+                min="2010-01-01"
+                required
+                onChange={(e) =>
+                  setFormData({ ...formData, endDate: e.target.value })
+                }
+              ></input>
+            </div>
+          </Form.Group>
+        </Col>
+      </Row>
+      <Row>
+        <Form.Group>
+          <Form.Label>Tipos</Form.Label>
+          <div className="type-container">
+            {types.map((type) => {
+              let color = type.selected ? "#badbcc" : "#f5c2c7";
+              return (
+                <div
+                  className="type"
+                  key={type.id}
+                  value={type.name}
+                  style={{
+                    textAlign: "center",
+                    margin: "5px",
+                    width: "20%",
+                    border: "1px solid #ccc",
+                    borderRadius: "10%",
+                    backgroundColor: color,
+                  }}
+                  onClick={(e) => {
+                    handleUpdateType(e.currentTarget.getAttribute("value"));
+                  }}
+                >
+                  <strong className="me-auto">{type.name}</strong>
+                </div>
+              );
+            })}
+          </div>
         </Form.Group>
-        <Form.Group as={Col} controlId="formGridType">
-          <label htmlFor="start">Start date:</label>
-          <input
-            type="date"
-            id="start"
-            name="trip-start"
-            min="2010-01-01"
-            onChange={(e) =>
-              setFormData({ ...formData, startDate: e.target.value })
-            }
-          ></input>
-          <label htmlFor="end">End date:</label>
-          <input
-            type="date"
-            id="end"
-            name="trip-end"
-            min="2010-01-01"
-            onChange={(e) =>
-              setFormData({ ...formData, endDate: e.target.value })
-            }
-          ></input>
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="formGridType">
-          <Form.Label>Tipo de Obra</Form.Label>
-          <Form.Label>Tipo</Form.Label>
-          {types.map((type) => (
-            <Form.Check
-              key={"type-checkbox-" + type}
-              type={"checkbox"}
-              id={"type-checkbox-" + type}
-              label={type}
-              value={type}
-              onChange={(e) => typesSelec.push(e.target.value)}
-            />
-          ))}
-          <Form.Label>Adicione novo tipo</Form.Label>
+      </Row>
+      <Row>
+        <Form.Group>
+          <Form.Label>Adicionar Tipo</Form.Label>
           <Form.Control
             placeholder="Tipo de Obra"
             value={newType}
             onChange={(e) => setNewType(e.target.value)}
           />
+          <Button
+            variant="secondary"
+            onClick={() => {
+              let max = Math.max(...types.map((max) => max.id));
+              console.log(max);
+              types.push({ id: null, name: newType, selected: true });
+              setNewType("");
+            }}
+          >
+            Adicionar Tipo
+          </Button>
         </Form.Group>
-        <Button
-          variant="secondary"
-          onClick={() => {
-            addNewType(newType);
-            setNewType("");
-          }}
-        >
-          Adicionar Tipo
-        </Button>
+      </Row>
+      <Row>
         <Form.Group className="mb-3" controlId="textAreaDesc">
           <Form.Label>Descrição</Form.Label>
           <Form.Control
@@ -127,10 +222,10 @@ const FormObraText = ({
             onChange={(e) => setFormData({ ...formData, desc: e.target.value })}
           />
         </Form.Group>
+        <Button variant="primary" type="submit">
+          Submit
+        </Button>
       </Row>
-      <Button variant="primary" type="submit">
-        Submit
-      </Button>
     </Form>
   );
 };

@@ -43,7 +43,7 @@ function App() {
           </Nav.Item>
           <Nav.Item>
             <Nav.Link>
-              <Link to="/reserved">Area Reservada</Link>
+              <Link to="/reserved">Área Reservada</Link>
             </Nav.Link>
           </Nav.Item>
         </Nav>
@@ -59,7 +59,7 @@ function App() {
           <Route path="/reserved" element={<ReservedArea />} />
         </Routes>
       </div>
-      <div class="footer">
+      <div className="footer">
         <p>Footer</p>
       </div>
     </BrowserRouter>

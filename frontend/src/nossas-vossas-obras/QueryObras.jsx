@@ -23,6 +23,7 @@ const QueryObras = ({ setSubmited, setResponse, setResponseLoading }) => {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    console.log(typesSelec)
     setResponseLoading(true);
     console.log(typesSelec)
     const response = await fetch("http://0.0.0.0:8000/obras/get-by-type", {

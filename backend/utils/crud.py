@@ -3,6 +3,7 @@ from collections import OrderedDict
 from typing import List
 from sqlalchemy.orm import Session
 from . import models, schemas
+from unidecode import unidecode
 
 
 def get_user(db: Session, user_id: int):
@@ -31,7 +32,7 @@ def verifyPwd(db: Session, user: schemas.UserCreate):
 
 
 def create_obra(db: Session, obra: schemas.ObraBase):
-    obra_name = obra.nameDisplayed.replace(' ', '_')
+    obra_name = unidecode(obra.nameDisplayed).lower().replace(' ', '_');
     typeList = [
         'antes', 'durante', 'depois']
     db_img = []
@@ -71,11 +72,12 @@ def get_obras_by_district(db: Session, district: str):
     return db.query(models.Obra).filter(models.Obra.district == district).all()
 
 
-def get_obras_by_type(db: Session, types: List[schemas.TypeBase]):
+def get_obras_by_type(db: Session, types: List[str]):
     obras = []
+    print(types)
     for t in types:
         query = db.query(models.Type).filter(
-            models.Type.name == t.name).first()
+            models.Type.name == t).first()
         if not query:
             pass
         else:
@@ -84,6 +86,7 @@ def get_obras_by_type(db: Session, types: List[schemas.TypeBase]):
                 obras.append(o)
             else:
                 return list(OrderedDict.fromkeys(obras))
+    return None
 
 
 def get_types(db: Session, skip: int = 0, limit: int = 100):

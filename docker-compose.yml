@@ -8,8 +8,8 @@ services:
       - 9000:9000
       - 9090:9090
     environment:
-      MINIO_ACCESS_KEY: admin
-      MINIO_SECRET_KEY: ABCdef00
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: ABCdef00
     volumes:
       - minio_data:/data
     command: ["minio","server","/data","--console-address",":9090"]
@@ -27,34 +27,33 @@ services:
   #     "
     
 
-  fastapi:
-    build: ./backend
-    container_name: backend_fastapi
-    ports:
-      - 8000:8000
-    environment:
-      ENV: dev
-      HOST: 0.0.0.0
-      PORT: 8000
-      S3_ACCESS_KEY: adminReatec
-      S3_SECRET_KEY: ABCdef00
-      S3_ENDPOINT: localhost:9000
-      S3_BUCKET: reatec-photo-storage
+  # fastapi:
+  #   build: ./backend
+  #   container_name: backend_fastapi
+  #   ports:
+  #     - 8000:8000
+  #   environment:
+  #     ENV: dev
+  #     HOST: 0.0.0.0
+  #     PORT: 8000
+  #     S3_ACCESS_KEY: adminReatec
+  #     S3_SECRET_KEY: ABCdef00
+  #     S3_ENDPOINT: localhost:9000
+  #     S3_BUCKET: reatec-photo-storage
 
-    command: ["python3", "main.py"]
-    #command: ["uvicorn", "src.main:app","--host", "0.0.0.0", "--port", "80"]
+  #   command: ["python3", "main.py"]
+  #   #command: ["uvicorn", "src.main:app","--host", "0.0.0.0", "--port", "80"] 
 
-  react:
-    container_name: frontend_react
-    build: ./frontend
-    volumes:
-      - '.:/app'
-      - '/app/node_modules'
-    ports:
-      - 3001:3000
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-    command: ["npm", "start"]
+  # react:
+  #   container_name: frontend_react
+  #   build: ./frontend
+  #   volumes:
+  #     - "./frontend:/app"
+  #     - "/app/node_modules"
+  #   ports:
+  #     - 3001:3000
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
 
 volumes:
   minio_data:

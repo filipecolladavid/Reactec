@@ -3,6 +3,10 @@
     align-items: center;
 }
 
+.login-input-container {
+  margin-bottom: 10px;
+}
+
 input[type="text"],
 input[type="password"] {
   height: 25px;
@@ -53,4 +57,31 @@ input[type="submit"]:hover {
   flex-direction: column;
   gap: 8px;
   margin: 10px;
+}
+
+.type-container {
+  display: flex;
+  flex-wrap: wrap;
+  border: solid 0.1 #ccc;
+  border-radius: 70%;
+}
+
+.type {
+  text-align: center;
+  margin:5px;
+  width: 20%;
+  border: 1px solid #ccc;
+  border-radius: 10%;
+}
+
+.type:hover {
+  cursor: pointer;
+}
+
+.btn {
+  margin-top: 10px;
+}
+
+.form-label {
+  margin-top: 10px;
 }

@@ -11,7 +11,7 @@ const ObraSubmission = () => {
       const data = await response.json();
       const tArray = [];
       for (let t in data) {
-        tArray.push(data[t].name);
+        tArray.push({id: data[t].id, name: data[t].name, selected: false});
       }
       setTypes(tArray);
       setLoading(false);

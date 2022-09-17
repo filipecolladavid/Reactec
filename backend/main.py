@@ -85,11 +85,16 @@ def get_all(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_obras(db, skip=skip, limit=limit)
 
 @app.post('/obras/get-by-type', response_model=(List[schemas.Obra]))
-def get_by_type(types: List[schemas.TypeBase], db: Session = Depends(get_db)):
+def get_by_type(types: List[str], db: Session = Depends(get_db)):
+    print(types)
     if not types:
         return crud.get_obras(db, skip=0, limit=100)
     else:
-        return crud.get_obras_by_type(db=db, types=types)
+        query = crud.get_obras_by_type(db=db, types=types)
+        if not query:
+            raise HTTPException(status_code=404, detail='No obra found with that type')
+        else:
+            return query
 
 
 @app.get('/obras/get-all-types', response_model=(List[schemas.Type]))
@@ -104,24 +109,26 @@ async def get_by_name(nameObra: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Obra not found")
     return db_obra
 
+#Using tempPath, CORS blocks bucket
+tempPath = ["photo_stock.jpeg","photo_stock.jpeg","photo_stock.jpeg"]
 
 @app.post('/files/antes/{nameObra}')
 async def create_files_antes(nameObra: str, images: List[UploadFile] = File(...), db: Session = Depends(get_db)):
 
     path = []
 
-    for image in images:
-        file_name = nameObra.lower() + '_antes_' + str(images.index(image)) + \
-            "." + image.content_type.split("/")[1]
-        try:
-            minio_client.fput_object(
-                environs.s3_bucket, file_name, image.file.fileno())
-            path.append("http://172.17.0.1:9000/" +
-                        environs.s3_bucket+"/"+file_name)
-        except S3Error as err:
-            print(err)
+    # for image in images:
+    #     file_name = nameObra.lower() + '_antes_' + str(images.index(image)) + \
+    #         "." + image.content_type.split("/")[1]
+    #     try:
+    #         minio_client.fput_object()
+    #             environs.s3_bucket, file_name, image.file.fileno())
+    #         path.append("http://172.17.0.1:9000/" +
+    #                     environs.s3_bucket+"/"+file_name)
+    #     except S3Error as err:
+    #         print(err)
 
-    crud.append_img(db=db, nameObra=nameObra, type="antes", path=path)
+    crud.append_img(db=db, nameObra=nameObra, type="antes", path=tempPath)
 
     return "ok"
 
@@ -131,18 +138,18 @@ async def create_files_durante(nameObra: str, images: List[UploadFile] = File(..
 
     path = []
 
-    for image in images:
-        file_name = nameObra.lower() + '_durante_' + str(images.index(image)) + \
-            "." + image.content_type.split("/")[1]
-        try:
-            minio_client.fput_object(
-                environs.s3_bucket, file_name, image.file.fileno())
-            path.append("http://172.17.0.1:9000/" +
-                        environs.s3_bucket+"/"+file_name)
-        except S3Error as err:
-            print(err)
+    # for image in images:
+    #     file_name = nameObra.lower() + '_durante_' + str(images.index(image)) + \
+    #         "." + image.content_type.split("/")[1]
+    #     try:
+    #         minio_client.fput_object(
+    #             environs.s3_bucket, file_name, image.file.fileno())
+    #         path.append("http://172.17.0.1:9000/" +
+    #                     environs.s3_bucket+"/"+file_name)
+    #     except S3Error as err:
+    #         print(err)
 
-    crud.append_img(db=db, nameObra=nameObra, type="durante", path=path)
+    crud.append_img(db=db, nameObra=nameObra, type="durante", path=tempPath)
 
     return "ok"
 
@@ -152,18 +159,18 @@ async def create_files_depois(nameObra: str, images: List[UploadFile] = File(...
 
     path = []
 
-    for image in images:
-        file_name = nameObra.lower() + '_depois_' + str(images.index(image)) + \
-            "." + image.content_type.split("/")[1]
-        try:
-            minio_client.fput_object(
-                environs.s3_bucket, file_name, image.file.fileno())
-            path.append("http://172.17.0.1:9000/" +
-                        environs.s3_bucket+"/"+file_name)
-        except S3Error as err:
-            print(err)
+    # for image in images:
+    #     file_name = nameObra.lower() + '_depois_' + str(images.index(image)) + \
+    #         "." + image.content_type.split("/")[1]
+    #     try:
+    #         minio_client.fput_object(
+    #             environs.s3_bucket, file_name, image.file.fileno())
+    #         path.append("http://172.17.0.1:9000/" +
+    #                     environs.s3_bucket+"/"+file_name)
+    #     except S3Error as err:
+    #         print(err)
 
-    crud.append_img(db=db, nameObra=nameObra, type="depois", path=path)
+    crud.append_img(db=db, nameObra=nameObra, type="depois", path=tempPath)
 
     return "ok"
 
