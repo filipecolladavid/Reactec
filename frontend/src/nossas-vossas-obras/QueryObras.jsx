@@ -1,21 +1,37 @@
-import { Form, Button, Spinner } from "react-bootstrap";
+import { Form, Button, Spinner, Alert } from "react-bootstrap";
 import { useEffect, useState } from "react";
 
 const QueryObras = ({ setSubmited, setResponse, setResponseLoading }) => {
   const [types, setTypes] = useState(null);
   const [loading1, setLoading] = useState(true);
   const [typesSelec, setTypesSelect] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch("http://0.0.0.0:8000/obras/get-all-types");
-      const data = await response.json();
-      const tArray = [];
-      for (let t in data) {
-        tArray.push(data[t].name);
-      }
-      console.log(tArray);
-      setTypes(tArray);
+      await fetch("http://0.0.0.0:8000/obras/get-all-types").then((response) => {
+        // first then()
+        if (!response.ok) {
+          throw Error(response.status);
+        }
+        else {
+          return response.json();
+        }
+      }).then((data) => {
+        if(data.length===0) {
+          throw Error("Não existem obras para serem mostradas");
+        }
+        const tArray = [];
+        for (let t in data) {
+          tArray.push(data[t].name);
+        }
+        console.log(tArray);
+        setTypes(tArray);
+      }).catch((err) => {
+        console.log(err);
+        setErrorMessage("Algo correu mal | " + err);
+      })
+
       setLoading(false);
     }
     fetchData();
@@ -63,26 +79,30 @@ const QueryObras = ({ setSubmited, setResponse, setResponseLoading }) => {
   return (
     <>
       {loading1 ? (
-        <Spinner />
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
       ) : (
-        <>
-          <h3>Encontre a sua obra</h3>
-          <Form onSubmit={handleSubmit}>
-            <h4>Escolha por tipo</h4>
-            <Form.Label>Tipo</Form.Label>
-            {types.map((type) => (
-              <Form.Check
-                key={"type-checkbox-" + type}
-                type={"checkbox"}
-                id={"type-checkbox-" + type}
-                label={type}
-                value={type}
-                onChange={(e) => typesSelec.push(e.target.value)}
-              />
-            ))}
-            <Button type="submit">Pesquisar</Button>
-          </Form>
-        </>
+        !types ? <><Alert variant="danger">{errorMessage}</Alert></> :
+          (<>
+            <h3>Encontre a sua obra</h3>
+            <Form onSubmit={handleSubmit}>
+              <h4>Escolha por tipo</h4>
+              <Form.Label>Tipo</Form.Label>
+              {types.map((type) => (
+                <Form.Check
+                  key={"type-checkbox-" + type}
+                  type={"checkbox"}
+                  id={"type-checkbox-" + type}
+                  label={type}
+                  value={type}
+                  onChange={(e) => typesSelec.push(e.target.value)}
+                />
+              ))}
+              <Button type="submit">Pesquisar</Button>
+            </Form>
+          </>
+          )
       )}
     </>
   );

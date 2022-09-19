@@ -44,7 +44,8 @@ input[type="submit"]:hover {
 
 .error {
   color: red;
-  font-size: 12px;
+  font-size: 16px;
+  margin-top: 10px;
 }
 
 .title {

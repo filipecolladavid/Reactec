@@ -32,6 +32,7 @@ const Result = ({ response, handleClick }) => {
         return (
           <Row>
             {obras.map((obra) => {
+              console.log(obra.img[2])
               return (
                 <Col>
                   <ObraCard
@@ -40,9 +41,7 @@ const Result = ({ response, handleClick }) => {
                     desc={obra.desc}
                     types={obra.type}
                     dates={obra.startDate + "-" + obra.endDate}
-                    imgPath={
-                      obra.img[2].path[0].name
-                    }
+                    imgPath={obra.img[2].path[0].name}
                     handleClick={handleClick}
                   />
                 </Col>

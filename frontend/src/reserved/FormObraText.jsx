@@ -1,5 +1,7 @@
 import { Col, Row, Button, Form } from "react-bootstrap";
 import { useState } from "react";
+import TypeSelectBox from "./TypeSelectBox";
+import { useEffect } from "react";
 
 const FormObraText = ({ types, setTypes, setSubmited, setObraName }) => {
   const distr = [
@@ -23,6 +25,7 @@ const FormObraText = ({ types, setTypes, setSubmited, setObraName }) => {
   ];
 
   const [newType, setNewType] = useState("");
+  const [typeError, setTypeError] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
     nameDisplayed: "",
@@ -30,8 +33,22 @@ const FormObraText = ({ types, setTypes, setSubmited, setObraName }) => {
     endDate: "",
     district: "",
     desc: "",
-    type: [],
   });
+
+  function addNewType(str) {
+    setTypeError("")
+    setNewType("");
+    let newArray = types;
+    if (types.some(e => e.name === str)) setTypeError("Tipo já existe na lista");
+    else {
+      newArray.push({ id: Math.max(...types.map(o => o.id)) + 1, name: str, selected: true });
+    }
+    setTypes(newArray);
+  }
+
+  useEffect(() => {
+    console.log(types);
+  }, [types]);
 
   function handleUpdateType(str) {
     const newTypes = types.map((obj) => {
@@ -40,20 +57,13 @@ const FormObraText = ({ types, setTypes, setSubmited, setObraName }) => {
       }
       return obj;
     });
-
-    setTypes(newTypes);
+    setTypes([...newTypes]);
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    let typesToSend = [];
-    for (let obj in types) {
-      if (types[obj].selected) {
-        typesToSend.push(types[obj].name);
-      }
-    }
 
-    setFormData({ ...formData, type: typesToSend });
+  async function handleSubmit(e) {
+
+    e.preventDefault();
 
     const response = await fetch("http://0.0.0.0:8000/obras/create-obra", {
       method: "POST",
@@ -85,9 +95,7 @@ const FormObraText = ({ types, setTypes, setSubmited, setObraName }) => {
         console.log("Request failed", error);
       });
 
-    setObraName(response.name);
-
-    console.log(response);
+    if (response) setObraName(response.name);
   }
 
   return (
@@ -96,7 +104,7 @@ const FormObraText = ({ types, setTypes, setSubmited, setObraName }) => {
       onSubmit={handleSubmit}
     >
       <Row>
-        <Form.Group>
+        <Form.Group controlId="formGridName">
           <Form.Label>Nome da Obra</Form.Label>
           <Form.Control
             required
@@ -105,7 +113,7 @@ const FormObraText = ({ types, setTypes, setSubmited, setObraName }) => {
               setFormData({ ...formData, nameDisplayed: e.target.value })
             }
           />
-          {errorMessage}
+          <div className="error nameObra">{errorMessage}</div>
         </Form.Group>
       </Row>
       <Row>
@@ -129,7 +137,7 @@ const FormObraText = ({ types, setTypes, setSubmited, setObraName }) => {
           </Form.Group>
         </Col>
         <Col>
-          <Form.Group>
+          <Form.Group controlId="formGridDate">
             <Form.Label>Datas</Form.Label>
             <div className="start-date">
               <label htmlFor="start">Start date:</label>
@@ -163,50 +171,24 @@ const FormObraText = ({ types, setTypes, setSubmited, setObraName }) => {
         </Col>
       </Row>
       <Row>
-        <Form.Group>
+        <Form.Group controlId="formGridTypes">
           <Form.Label>Tipos</Form.Label>
-          <div className="type-container">
-            {types.map((type) => {
-              let color = type.selected ? "#badbcc" : "#f5c2c7";
-              return (
-                <div
-                  className="type"
-                  key={type.id}
-                  value={type.name}
-                  style={{
-                    textAlign: "center",
-                    margin: "5px",
-                    width: "20%",
-                    border: "1px solid #ccc",
-                    borderRadius: "10%",
-                    backgroundColor: color,
-                  }}
-                  onClick={(e) => {
-                    handleUpdateType(e.currentTarget.getAttribute("value"));
-                  }}
-                >
-                  <strong className="me-auto">{type.name}</strong>
-                </div>
-              );
-            })}
-          </div>
+          <TypeSelectBox types={types} handleUpdateType={handleUpdateType} />
         </Form.Group>
       </Row>
       <Row>
-        <Form.Group>
+        <Form.Group controlId="formGridAddTypes">
           <Form.Label>Adicionar Tipo</Form.Label>
           <Form.Control
             placeholder="Tipo de Obra"
             value={newType}
             onChange={(e) => setNewType(e.target.value)}
           />
+          <div className="error typebox">{typeError}</div>
           <Button
             variant="secondary"
             onClick={() => {
-              let max = Math.max(...types.map((max) => max.id));
-              console.log(max);
-              types.push({ id: null, name: newType, selected: true });
-              setNewType("");
+              addNewType(newType);
             }}
           >
             Adicionar Tipo
@@ -214,7 +196,7 @@ const FormObraText = ({ types, setTypes, setSubmited, setObraName }) => {
         </Form.Group>
       </Row>
       <Row>
-        <Form.Group className="mb-3" controlId="textAreaDesc">
+        <Form.Group className="mb-3" controlId="formGridDesc">
           <Form.Label>Descrição</Form.Label>
           <Form.Control
             as="textarea"
@@ -222,7 +204,13 @@ const FormObraText = ({ types, setTypes, setSubmited, setObraName }) => {
             onChange={(e) => setFormData({ ...formData, desc: e.target.value })}
           />
         </Form.Group>
-        <Button variant="primary" type="submit">
+        <Button variant="primary" type="submit" onClick={() => {
+          let arr = [];
+          for (let t in types) {
+            arr.push(types[t].name);
+          }
+          setFormData({ ...formData, type: arr });
+        }}>
           Submit
         </Button>
       </Row>
