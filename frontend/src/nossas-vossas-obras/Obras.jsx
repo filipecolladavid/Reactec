@@ -14,43 +14,39 @@ const Obras = () => {
   const [obra, setObra] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setResponseLoading(true);
+  // async function handleSubmit(e) {
+  //   e.preventDefault();
+  //   setResponseLoading(true);
 
-    // setObraName(response.name);
+  //   // setObraName(response.name);
 
-    setResponse(response);
-    setResponseLoading(false);
-  }
+  //   setResponse(response);
+  //   setResponseLoading(false);
+  // }
 
   async function handleClick(str) {
 
-    console.log(str);
+    setLoading(true);
 
-    const response = await fetch(
+    await fetch(
       "http://0.0.0.0:8000/obras/get-by-name/" + str
     )
-      .then(function (response) {
-        // first then()
-        if (response.ok) {
-
+      .then((response) => {
+        if (!response.ok) {
+          setSubmited(false);
+          throw new Error("Essa obra já não existe");
         }
-        setSubmited(false);
-        setErrorMessage("Essa obra já não existe");
+        else return response.json();
       })
-      .then(function (text) {
-        // second then()
-        console.log("Request successful", text);
-        return text;
+      .then((data) => {
+        setObra(data);
+        setShowObra(true);
       })
-      .catch(function (error) {
-        // catch
-        console.log("Request failed", error);
+      .catch((error) => {
+        setErrorMessage(error);
+        console.log("Request failed: ", error);
       });
-      setShowObra(true);
-      setObra(response);
-      setLoading(false);
+    setLoading(false);
   }
 
   return (

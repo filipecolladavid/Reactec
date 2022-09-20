@@ -4,10 +4,8 @@ import { Row, Col, Container } from "react-bootstrap";
 import { useState } from "react";
 
 const Result = ({ response, handleClick }) => {
+
   const [array, setArray] = useState([]);
-  const [imgPath, setImgPath] = useState();
-
-
 
   useEffect(() => {
     let maxRows = Math.ceil(response.length / 3);
@@ -34,7 +32,7 @@ const Result = ({ response, handleClick }) => {
             {obras.map((obra) => {
               console.log(obra.img[2])
               return (
-                <Col>
+                <Col key = {obra.name}>
                   <ObraCard
                     name={obra.name}
                     nameDisplayed={obra.nameDisplayed}

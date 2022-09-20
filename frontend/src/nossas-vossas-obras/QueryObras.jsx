@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 
 const QueryObras = ({ setSubmited, setResponse, setResponseLoading }) => {
   const [types, setTypes] = useState(null);
-  const [loading1, setLoading] = useState(true);
-  const [typesSelec, setTypesSelect] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  let typesToSend = [];
 
   useEffect(() => {
     async function fetchData() {
@@ -18,7 +18,7 @@ const QueryObras = ({ setSubmited, setResponse, setResponseLoading }) => {
           return response.json();
         }
       }).then((data) => {
-        if(data.length===0) {
+        if (data.length === 0) {
           throw Error("Não existem obras para serem mostradas");
         }
         const tArray = [];
@@ -31,18 +31,26 @@ const QueryObras = ({ setSubmited, setResponse, setResponseLoading }) => {
         console.log(err);
         setErrorMessage("Algo correu mal | " + err);
       })
-
       setLoading(false);
     }
     fetchData();
   }, [setLoading, setTypes]);
 
+  function handleSelect(value) {
+    let index = typesToSend.indexOf(value);
+    if (index > -1) {
+      typesToSend.splice(index, 1);
+    }
+    else {
+      typesToSend.push(value);
+    }
+    console.log(typesToSend);
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
-    console.log(typesSelec)
     setResponseLoading(true);
-    console.log(typesSelec)
-    const response = await fetch("http://0.0.0.0:8000/obras/get-by-type", {
+    await fetch("http://0.0.0.0:8000/obras/get-by-type", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -50,7 +58,7 @@ const QueryObras = ({ setSubmited, setResponse, setResponseLoading }) => {
         "X-Requested-With": "XMLHttpRequest",
         mode: "Access-Control-Allow-Origin",
       },
-      body: JSON.stringify(typesSelec),
+      body: JSON.stringify(typesToSend),
     })
       .then(function (response) {
         // first then()
@@ -60,25 +68,19 @@ const QueryObras = ({ setSubmited, setResponse, setResponseLoading }) => {
         }
         throw new Error("Something went wrong.", response);
       })
-      .then(function (text) {
-        // second then()
-        console.log("Request successful", text);
-        return text;
+      .then(function (data) {
+        console.log("Request successful", data);
+        setResponse(data);
       })
-      .catch(function (error) {
-        // catch
-        console.log("Request failed", error);
+      .catch(function (err) {
+        console.log("Request failed", err);
       });
-
-    // setObraName(response.name);
-
-    setResponse(response);
     setResponseLoading(false);
   }
 
   return (
     <>
-      {loading1 ? (
+      {loading ? (
         <Spinner animation="border" role="status">
           <span className="visually-hidden">Loading...</span>
         </Spinner>
@@ -87,7 +89,6 @@ const QueryObras = ({ setSubmited, setResponse, setResponseLoading }) => {
           (<>
             <h3>Encontre a sua obra</h3>
             <Form onSubmit={handleSubmit}>
-              <h4>Escolha por tipo</h4>
               <Form.Label>Tipo</Form.Label>
               {types.map((type) => (
                 <Form.Check
@@ -96,7 +97,7 @@ const QueryObras = ({ setSubmited, setResponse, setResponseLoading }) => {
                   id={"type-checkbox-" + type}
                   label={type}
                   value={type}
-                  onChange={(e) => typesSelec.push(e.target.value)}
+                  onChange={(e) => handleSelect(e.target.value)}
                 />
               ))}
               <Button type="submit">Pesquisar</Button>
