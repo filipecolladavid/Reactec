@@ -38,7 +38,7 @@ const ReservedArea = () => {
     setLoading(false);
   }
   const LoginForm = (
-    <div className="pageContainer">
+    <>
       <h1>Área Reservada</h1>
       <Form className="form" onSubmit={handleSubmit}>
         <Form.Group className="login-input-container">
@@ -76,7 +76,7 @@ const ReservedArea = () => {
         )}
         <div style={{ color: "red" }}>{errorMessage}</div>
       </Form>
-    </div>
+    </>
   );
   return !accepted ? LoginForm : <ObraSubmission />;
 };

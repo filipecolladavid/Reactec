@@ -25,7 +25,6 @@ const Result = ({ response, handleClick }) => {
   }, [response]);
 
   return (
-
     <Container>
       {array.map((obras) => {
         return (
@@ -33,7 +32,7 @@ const Result = ({ response, handleClick }) => {
             {obras.map((obra) => {
               console.log(obra.img[2])
               return (
-                <Col key={obra.name}>
+                <Col key = {obra.name}>
                   <ObraCard
                     name={obra.name}
                     nameDisplayed={obra.nameDisplayed}

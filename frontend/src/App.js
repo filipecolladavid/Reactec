@@ -1,68 +1,30 @@
-import "./App.css";
-import Home from "./Home";
-import ReservedArea from "./reserved/ReservedArea";
+// Bootstrap CSS
+import "bootstrap/dist/css/bootstrap.min.css";
+// Bootstrap Bundle JS
+import "bootstrap/dist/js/bootstrap.bundle.min";
+
+import {useEffect} from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import ComoFunc from "./como-funcionamos/ComoFunc";
-import QuemSomos from "./quem-somos/QuemSomos";
-import ProcConstr from "./processos-construtivos/ProcConstr";
-import Obras from "./nossas-vossas-obras/Obras";
-import Contactos from "./contactos/Contactos";
-import { Nav } from "react-bootstrap";
+
+
+import ReservedArea from "./reserved/ReservedArea";
+import Sections from "./Sections";
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="header">
-        <Nav className="justify-content-center">
-          <Nav.Item>
-            <Nav.Link>
-              <Link to="/">Home</Link>
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link>
-              <Link to="/como-funcionamos">Como Funcionamos</Link>
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link>
-              <Link to="/quem-somos">Quem Somos</Link>
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link>
-              <Link to="/nossas-vossas-obras">Nossas/Vossas Obras</Link>
-            </Nav.Link>
-          </Nav.Item>
-        </Nav>
-        <Nav className="justify-content-center">
-          <Nav.Item>
-            <Nav.Link>
-              <Link to="/contactos">Contactos</Link>
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link>
-              <Link to="/reserved">Área Reservada</Link>
-            </Nav.Link>
-          </Nav.Item>
-        </Nav>
-      </div>
-      <div className="content">
+    <div className="App">
+      <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/como-funcionamos" element={<ComoFunc />} />
-          <Route path="/quem-somos" element={<QuemSomos />} />
-          <Route path="/processos-construtivos" element={<ProcConstr />} />
-          <Route path="/nossas-vossas-obras" element={<Obras />} />
-          <Route path="/contactos" element={<Contactos />} />
-          <Route path="/reserved" element={<ReservedArea />} />
+          <Route
+            path="/"
+            element={
+              <Sections />
+            }
+          />
+          <Route path="/ReservedArea" element={<ReservedArea />} />
         </Routes>
-      </div>
-      <div className="footer">
-        <p>Footer</p>
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </div>
   );
 }
 
