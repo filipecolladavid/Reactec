@@ -1,5 +1,5 @@
 import { Form, Button, Spinner, Alert } from "react-bootstrap";
-import { useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 const QueryObras = ({ setSubmited, setResponse, setResponseLoading }) => {
   const [types, setTypes] = useState(null);
@@ -60,19 +60,18 @@ const QueryObras = ({ setSubmited, setResponse, setResponseLoading }) => {
       },
       body: JSON.stringify(typesToSend),
     })
-      .then(function (response) {
-        // first then()
+      .then((response) => {
         if (response.ok) {
           setSubmited(true);
           return response.json();
         }
         throw new Error("Something went wrong.", response);
       })
-      .then(function (data) {
+      .then((data) => {
         console.log("Request successful", data);
         setResponse(data);
       })
-      .catch(function (err) {
+      .catch((err) => {
         console.log("Request failed", err);
       });
     setResponseLoading(false);

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Button, Form, Spinner } from "react-bootstrap";
 import "./ReservedArea.css";
-import ObraSubmission from "./ObraSubmission";
+import Menu from "./Menu";
 
 const ReservedArea = () => {
-  const [accepted, setAccepted] = useState(false);
+  const [accepted, setAccepted] = useState(true);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [formData, setFormData] = useState({
@@ -78,7 +78,7 @@ const ReservedArea = () => {
       </Form>
     </div>
   );
-  return !accepted ? LoginForm : <ObraSubmission />;
+  return !accepted ? LoginForm : <Menu />;
 };
 
 export default ReservedArea;

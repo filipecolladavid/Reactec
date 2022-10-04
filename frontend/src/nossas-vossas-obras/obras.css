@@ -6,15 +6,16 @@
     display: flex;
 }
 
-.cardObra {
+.card {
     width: 18rem;
-    margin:15px
+    margin:15px;
+    border: gray 0.1em
 }
 
-.cardObra:hover {
+.card:hover {
     cursor: pointer;
 }
 
-.cardObra:img {
+.card:img {
     justify-content: center;
 }

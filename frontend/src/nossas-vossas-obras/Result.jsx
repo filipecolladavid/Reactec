@@ -1,54 +1,34 @@
-import ObraCard from "./ObraCard";
-import { useEffect } from "react";
-import { Row, Col, Container } from "react-bootstrap";
+import { Container, CardGroup, Card, ListGroup } from "react-bootstrap";
 import { useState } from "react";
 
 const Result = ({ response, handleClick }) => {
-
-  const [array, setArray] = useState([]);
-
-  useEffect(() => {
-    let maxRows = Math.ceil(response.length / 3);
-    const splitArray = (arr, rows) => {
-      const itemsPerRow = Math.ceil(arr.length / rows);
-      return arr.reduce((acc, val, ind) => {
-        const currentRow = Math.floor(ind / itemsPerRow);
-        if (!acc[currentRow]) {
-          acc[currentRow] = [val];
-        } else {
-          acc[currentRow].push(val);
-        }
-        return acc;
-      }, []);
-    };
-    setArray(splitArray(response, maxRows));
-  }, [response]);
+  
+  const length = 100;
 
   return (
-
     <Container>
-      {array.map((obras) => {
-        return (
-          <Row>
-            {obras.map((obra) => {
-              console.log(obra.img[2])
-              return (
-                <Col key={obra.name}>
-                  <ObraCard
-                    name={obra.name}
-                    nameDisplayed={obra.nameDisplayed}
-                    desc={obra.desc}
-                    types={obra.type}
-                    dates={obra.startDate + "-" + obra.endDate}
-                    imgPath={obra.img[2].path[0].name}
-                    handleClick={handleClick}
-                  />
-                </Col>
-              );
-            })}
-          </Row>
-        );
-      })}
+      <CardGroup>
+        {response.map((obra) => {
+          console.log(obra);
+          return (
+            <Card className="cardObra" key={obra.name} onClick={() => handleClick(obra.name)}>
+              <Card.Img variant="top" className="image" src={obra.img[2].path[0].name} />
+              <Card.Body>
+                <Card.Title>{obra.nameDisplayed}</Card.Title>
+                <Card.Text>{obra.desc.substring(0, length) + " ..."}</Card.Text>
+              </Card.Body>
+              <ListGroup className="list-group-type">
+                {(obra.type).map((type) => {
+                  return <ListGroup.Item key={type.id}>{type.name}</ListGroup.Item>;
+                })}
+              </ListGroup>
+              <ListGroup className="list-group-type">
+                <ListGroup.Item>{obra.startDate} / {obra.endDate}</ListGroup.Item>
+              </ListGroup>
+            </Card>
+          );
+        })}
+      </CardGroup>
     </Container>
   );
 };

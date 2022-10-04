@@ -34,7 +34,6 @@ const ObraSubmission = () => {
 
   return (
     <div className="pageContainer">
-      <h1>Criar Obra</h1>
       {loading ? <Spinner /> : (!types ? <><Alert variant="danger">{errorMessage}</Alert></> : <InfoObra types={types} setTypes={setTypes} />)}
     </div>
   );
