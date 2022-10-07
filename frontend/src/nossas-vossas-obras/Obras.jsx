@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Spinner } from "react-bootstrap";
 import QueryObras from "./QueryObras";
-import Result from "./Result";
-import Obra from "./Obra";
+import Result from "../result/Result";
+import Obra from "../obra/Obra";
 import "./obras.css";
 
 const Obras = () => {
@@ -83,9 +83,9 @@ const Obras = () => {
                 {responseLoading ? (
                   <Spinner />
                 ) : (
-                  <div style={{ display: "flex", alignItems:"center" }}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
                     <div className="arrow" onClick={() => setSubmited(false)}>
-                      <img style={{width:"20px"}} src="leftArrow.png"></img>
+                      <img style={{ width: "20px" }} src="leftArrow.png" alt="backArrow"></img>
                       Voltar atrás
                     </div>
                     <Result response={response} handleClick={handleClick} />

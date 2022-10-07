@@ -1,0 +1,25 @@
+.card {
+  padding: 5px;
+  width: 20rem;
+}
+
+.card:hover {
+  cursor: pointer;
+}
+
+.card:img {
+  justify-content: center;
+}
+
+.desc {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* number of lines to show */
+  line-clamp: 2; 
+  -webkit-box-orient: vertical;
+}
+
+svg:hover {
+  cursor: pointer;
+}
