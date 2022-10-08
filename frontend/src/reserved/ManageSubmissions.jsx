@@ -1,7 +1,6 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Spinner, Alert } from "react-bootstrap";
-import ObrasToManage from "./ObrasToManage";
+import Result from "../result/Result";
 
 const ManageSubmissions = () => {
 
@@ -29,6 +28,32 @@ const ManageSubmissions = () => {
         fetchData();
     }, [])
 
+    async function fetchData() {
+        await fetch("http://0.0.0.0:8000/obras/get-all")
+            .then((response) => {
+                if (!response.ok) {
+                    throw Error(response.status);
+                }
+                else return response.json();
+            })
+            .then((data) => {
+                setResponse(data);
+            })
+            .catch((err) => {
+                setErrorMessage("Algo correu mal: " + err);
+            })
+        setLoading(false);
+    }
+
+    async function handleRemove(id) {
+        setLoading(true);
+        fetchData();
+        alert("Está a remover "+id);
+    }
+
+    async function editObra() {
+
+    }
 
     return (
         <div className="pageContainer">
@@ -38,7 +63,7 @@ const ManageSubmissions = () => {
                     <span className="visually-hidden">Loading...</span>
                 </Spinner>
                 :
-                response ? <ObrasToManage /> : <Alert variant="danger">{errorMessage}</Alert>
+                response ? <Result response={response} editable={true} handleClick={editObra} handleRemove={handleRemove}/> : <Alert variant="danger">{errorMessage}</Alert>
 
             }
         </div>

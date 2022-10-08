@@ -59,6 +59,14 @@ def create_obra(db: Session, obra: schemas.ObraBase):
 
     return db_obra
 
+def delete_obra(db: Session, id: int):
+    obra = db.query(models.Obra).filter(models.Obra.id == id).first(); 
+    db.delete(obra);
+    db.commit();
+
+def get_obra_by_id(db: Session, id: int):
+    return db.query(models.Obra).filter(models.Obra.id == id).first()
+
 
 def get_obras(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Obra).offset(skip).limit(limit).all()

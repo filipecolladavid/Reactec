@@ -1,3 +1,5 @@
+from email.policy import HTTP
+from http.client import OK
 import os
 from typing import List
 from fastapi import Depends, FastAPI, HTTPException, File, UploadFile
@@ -79,10 +81,27 @@ def create_obra(obra: schemas.ObraBase, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail='Obra already registered')
     return crud.create_obra(db=db, obra=obra)
 
+@app.delete('/obras/delete/{id}', status_code=204)
+def delete_obra(id: int, db: Session = Depends(get_db)):
+    db_obra = crud.get_obra_by_id(db=db, id=id)
+    if not db_obra:
+        raise HTTPException(status_code=404, detail='Obra not found')
+    crud.delete_obra(db=db, id=id)
+    return 204
+
+
+@app.get('/obras/get-by-id/{id}', status_code=200)
+def get_by_id(id: int, db:Session = Depends(get_db)):
+    db_obra = crud.get_obra_by_id(db=db, id=id)
+    if not db_obra:
+        raise HTTPException(status_code=404, detail='Obra not found')
+    return 200
+
 
 @app.get('/obras/get-all', response_model=(List[schemas.Obra]))
 def get_all(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_obras(db, skip=skip, limit=limit)
+
 
 @app.post('/obras/get-by-type', response_model=(List[schemas.Obra]))
 def get_by_type(types: List[str], db: Session = Depends(get_db)):

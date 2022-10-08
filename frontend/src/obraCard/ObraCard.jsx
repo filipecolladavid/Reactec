@@ -1,9 +1,8 @@
 import { Card, ListGroup } from "react-bootstrap";
-import { MdEdit } from "react-icons/md"
 import { TiDelete } from "react-icons/ti"
 import "./obraCard.css"
 
-const ObraCard = ({ imgPath, title, desc, type, startDate, endDate, editable, handleClick, handleEdit, handleRemove }) => {
+const ObraCard = ({ id, imgPath, title, desc, type, startDate, endDate, editable, handleClick, handleRemove }) => {
 
     const rows = type.reduce(function (rows, key, index) {
         return (index % 2 === 0 ? rows.push([key])
@@ -13,9 +12,8 @@ const ObraCard = ({ imgPath, title, desc, type, startDate, endDate, editable, ha
     return (
         <div className="cardContainer">
             {editable ?
-                <div style={{ display: "flex", justifyContent: "space-around", marginTop: "10px" }}>
-                    <MdEdit style={{ color: "green" }} size={"2em"} onClick={handleEdit} />
-                    <TiDelete style={{ color: "red" }} size={"2em"} onClick={handleRemove} />
+                <div style={{ display:"flex", justifyContent:"flex-end" }}>
+                    <TiDelete style={{ color: "red" }} size={"2em"} onClick={() => handleRemove(id)} />
                 </div> :
                 <></>}
             <Card onClick={handleClick}>
