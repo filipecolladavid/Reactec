@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useState, useRef } from "react";
 import { Spinner, Button } from "react-bootstrap";
-const FormUpload = ({ obraName, index, uploadType, setDone, done, setAllDone }) => {
+const FormUpload = ({ obraName, index, uploadType, setDone, done, setAllDone, setDisable }) => {
   const url = "http://0.0.0.0:8000/files/";
 
   const fileInputRef = useRef();
@@ -10,11 +10,17 @@ const FormUpload = ({ obraName, index, uploadType, setDone, done, setAllDone }) 
 
   useEffect(() => {
     function checkDone() {
-      if (done.includes(false)) return false;
-      else return true;
+      if (done.includes(false)){
+        setDisable(true);
+        return false;
+      }
+      else{
+        setDisable(false);
+        return true;
+      }
     }
     setAllDone(checkDone());
-  }, [done, setAllDone]);
+  }, [done, setAllDone, setDisable]);
 
 
   const handleSubmit = async (e) => {

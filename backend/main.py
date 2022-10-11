@@ -81,7 +81,7 @@ def create_obra(obra: schemas.ObraBase, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail='Obra already registered')
     return crud.create_obra(db=db, obra=obra)
 
-@app.delete('/obras/delete/{id}', status_code=204)
+@app.get('/obras/delete/{id}', status_code=204)
 def delete_obra(id: int, db: Session = Depends(get_db)):
     db_obra = crud.get_obra_by_id(db=db, id=id)
     if not db_obra:
@@ -90,12 +90,12 @@ def delete_obra(id: int, db: Session = Depends(get_db)):
     return 204
 
 
-@app.get('/obras/get-by-id/{id}', status_code=200)
+@app.get('/obras/get-by-id/{id}', response_model=schemas.Obra)
 def get_by_id(id: int, db:Session = Depends(get_db)):
     db_obra = crud.get_obra_by_id(db=db, id=id)
     if not db_obra:
         raise HTTPException(status_code=404, detail='Obra not found')
-    return 200
+    return db_obra
 
 
 @app.get('/obras/get-all', response_model=(List[schemas.Obra]))

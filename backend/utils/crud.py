@@ -60,7 +60,7 @@ def create_obra(db: Session, obra: schemas.ObraBase):
     return db_obra
 
 def delete_obra(db: Session, id: int):
-    obra = db.query(models.Obra).filter(models.Obra.id == id).first(); 
+    obra = db.query(models.Obra).filter(models.Obra.id == id).first();
     db.delete(obra);
     db.commit();
 
@@ -95,7 +95,6 @@ def get_obras_by_type(db: Session, types: List[str]):
             else:
                 return list(OrderedDict.fromkeys(obras))
     return None
-
 
 def get_types(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Type).offset(skip).limit(limit).all()

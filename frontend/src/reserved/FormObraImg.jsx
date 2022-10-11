@@ -1,7 +1,7 @@
 import { useState } from "react";
 import FormUpload from "./FormUpload";
 
-const FormObraImg = ({ obraName }) => {
+const FormObraImg = ({ obraName, setDisable }) => {
   const type = ["Antes", "Durante", "Depois"];
   const [allDone, setAllDone] = useState(false);
   const [done, setDone] = useState([false, false, false]);
@@ -15,7 +15,7 @@ const FormObraImg = ({ obraName }) => {
           {type.map((uploadType, i) => {
             return (
               <div className="upload container" key={uploadType+"_"+i}>
-                <FormUpload obraName={obraName} index={i} uploadType={uploadType} done={done} setDone={setDone} setAllDone={setAllDone} />
+                <FormUpload obraName={obraName} index={i} uploadType={uploadType} done={done} setDone={setDone} setAllDone={setAllDone} setDisable={setDisable} />
               </div>
             );
           })}

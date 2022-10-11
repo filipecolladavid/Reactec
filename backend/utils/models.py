@@ -10,8 +10,10 @@ class User(Base):
     hashed_password = Column(String(255))
 
 
-obra_type = Table('obra_type', Base.metadata, Column(
-    'obras_id', ForeignKey('obras.id')), Column('types_id', ForeignKey('types.id')))
+obra_type = Table('obra_type', Base.metadata,
+                  Column('obras_id', ForeignKey('obras.id')),
+                  Column('types_id', ForeignKey('types.id'))
+                  )
 
 
 class Obra(Base):
@@ -23,7 +25,7 @@ class Obra(Base):
     endDate = Column(String(255))
     district = Column(String(255))
     desc = Column(String(1000))
-    type = relationship('Type', secondary=obra_type, backref='obras')
+    type = relationship('Type', secondary=obra_type, back_populates='obras', cascade="all, delete")
     img = relationship('Image', backref='obras')
 
     def __hash__(self):
@@ -34,6 +36,7 @@ class Type(Base):
     __tablename__ = 'types'
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
+    obras = relationship("Obra", secondary=obra_type, back_populates='type')
 
 
 class Image(Base):

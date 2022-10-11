@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Spinner, Alert } from "react-bootstrap";
 import InfoObra from "./InfoObra";
 
-const ObraSubmission = () => {
+const ObraSubmission = ({setDisable}) => {
   const [types, setTypes] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -34,7 +34,7 @@ const ObraSubmission = () => {
 
   return (
     <div className="pageContainer">
-      {loading ? <Spinner /> : (!types ? <><Alert variant="danger">{errorMessage}</Alert></> : <InfoObra types={types} setTypes={setTypes} />)}
+      {loading ? <Spinner /> : (!types ? <><Alert variant="danger">{errorMessage}</Alert></> : <InfoObra types={types} setTypes={setTypes} setDisable={setDisable}/>)}
     </div>
   );
 };
