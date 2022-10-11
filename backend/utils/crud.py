@@ -82,7 +82,6 @@ def get_obras_by_district(db: Session, district: str):
 
 def get_obras_by_type(db: Session, types: List[str]):
     obras = []
-    print(types)
     for t in types:
         query = db.query(models.Type).filter(
             models.Type.name == t).first()
@@ -106,7 +105,6 @@ def append_img(db: Session, nameObra: str, type: str, path: List[str]):
     db_obra = get_obra_by_name(db=db, name=nameObra)
 
     id = db_obra.id
-    print(id)
 
     query_img = db.query(models.Image).filter(models.Image.obra_id == id, models.Image.type == type).first()
 

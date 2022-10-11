@@ -1,5 +1,7 @@
 .card {
   padding: 10px;
+  min-height: 600px;
+  max-width: 500px;
 }
 
 .card:hover {

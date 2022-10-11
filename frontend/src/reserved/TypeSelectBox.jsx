@@ -13,7 +13,7 @@ const TypeSelectBox = ({types, handleUpdateType}) => {
                         margin: "5px",
                         width: "20%",
                         border: "1px solid #ccc",
-                        borderRadius: "10%",
+                        borderRadius: "5%",
                         backgroundColor: color,
                     }}
                     onClick={(e) => {

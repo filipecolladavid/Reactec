@@ -26,7 +26,6 @@ const ObraCard = ({ id, imgPath, title, desc, type, startDate, endDate, editable
                 </Card.Body>
                 <Card.Body>
                     <ListGroup className="list-group-flush" style={{ display: "flex", alignItems: "center", width: "100%" }}>
-
                         {rows.map((row, idx) => (
                             <>
                                 {idx > 1 ? <></>

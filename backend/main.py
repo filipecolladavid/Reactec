@@ -66,7 +66,6 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 @app.post('/users/login', status_code=200)
 def login_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.verifyPwd(db, user)
-    print(db_user)
     if db_user is None:
         raise HTTPException(status_code=403, detail='Not Authorized')
     return user.username
@@ -76,7 +75,6 @@ def login_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 def create_obra(obra: schemas.ObraBase, db: Session = Depends(get_db)):
     db_obra = crud.get_obra_by_name(
         db, name=(obra.nameDisplayed.replace(' ', '_')))
-    print(db_obra)
     if db_obra:
         raise HTTPException(status_code=400, detail='Obra already registered')
     return crud.create_obra(db=db, obra=obra)
@@ -105,7 +103,6 @@ def get_all(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 @app.post('/obras/get-by-type', response_model=(List[schemas.Obra]))
 def get_by_type(types: List[str], db: Session = Depends(get_db)):
-    print(types)
     if not types:
         return crud.get_obras(db, skip=0, limit=100)
     else:
